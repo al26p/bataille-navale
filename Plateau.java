@@ -1,16 +1,24 @@
 public class Plateau {
-    public Complexe(){
+    int[][] plateau;
+    
+    public Plateau(){
+        int taille = 10;
+        plateau = new int[taille][taille];
         
-    public static boolean[][] genererMondeAleatoire(int hauteur, int largeur, double p){
-    boolean[][] monde = new boolean[hauteur][largeur];
-     for (int i=0;i<hauteur;i++) {
-        for(int j=0; j<largeur;j++) {
-        monde[i][j] = (Math.random()<p);
+        for (int i=0;i<taille;i++) {
+            for(int j=0; j<taille;j++) {
+                plateau[i][j] = 0;
+            }
         }
+        
     }
-        return monde;
+    
+    public genererBateaux(){
+        
+        
     }
-    }
+        
+        
     
     
 }
