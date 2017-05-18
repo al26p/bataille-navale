@@ -1,4 +1,13 @@
 import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 
 public class BattailleNavale {
     static String ERR1 = "GENERATION ERROR";
@@ -59,15 +68,58 @@ public class BattailleNavale {
     }
     
     private static void About(){
-        System.out.println("Jeu de bataille navale crée par Alban PRATS et Juliette ROYERE, élèves à l'INSA LYON  (PCC1A Groupe 12) dans le cadre d'un projet informatique")
+        System.out.println("Jeu de bataille navale créé par Alban PRATS et Juliette ROYERE, élèves à l'INSA LYON  (PCC1A Groupe 12) dans le cadre d'un projet d'informatique.")
     }    
     private static void Client(){
-        
+        Socket socket;
+		BufferedReader in;
+		PrintWriter out;
+
+		try {
+		
+			socket = new Socket(InetAddress.getLocalHost(),2009);	
+		        System.out.println("Demande de connexion");
+
+		        in = new BufferedReader (new InputStreamReader (socket.getInputStream()));
+		        String message_distant = in.readLine();
+		        System.out.println(message_distant);
+		        
+		        socket.close();
+		       
+		}catch (UnknownHostException e) {
+			
+			e.printStackTrace();
+		}catch (IOException e) {
+			
+			e.printStackTrace();
+		}
         
     }    
         
-    private static void Server(){
         
+    private static void Server(){
+        ServerSocket socketserver  ;
+		Socket socketduserveur ;
+		BufferedReader in;
+		PrintWriter out;
+		
+		try {
+		
+			socketserver = new ServerSocket(2009);
+			System.out.println("Le serveur est à l'écoute du port "+socketserver.getLocalPort());
+			socketduserveur = socketserver.accept(); 
+		        System.out.println("Un zéro s'est connecté");
+			out = new PrintWriter(socketduserveur.getOutputStream());
+		        out.println("Vous êtes connecté zéro !");
+		        out.flush();
+		                
+		        socketduserveur.close();
+		        socketserver.close();
+		        
+		}catch (IOException e) {
+			
+			e.printStackTrace();
+		}
         
     }    
         
