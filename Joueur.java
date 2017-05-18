@@ -6,11 +6,11 @@ public class Joueur {
     public Joueur(String name){
         pseudo=name;
         monPlateau= new Plateau();
-        score = 10;
+        score = 0;
     }
     
     public int getScore(){return score;}
-    public void setScore(boolean win){if(win){score ++;}}
+    public void win(){score ++;}
     public String getName(){return pseudo;}
     
 }
