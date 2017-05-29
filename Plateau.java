@@ -1,31 +1,31 @@
 /**
  * Gestion du plateau
- * @author aprats 
+ * @author aprats
  * @author jroyere
- * 
- * 
+ *
+ *
  */
 public class Plateau {
     int[][] plateau; //a modifier, l'atribut static ne convient pas
-    
+
     /**
      * Constructeur de la classe
      * Ne demande par d'arguments, la taille de la grille est fixée à 10
-     * 
+     *
      */
     public Plateau(){
         int taille = 10;
         plateau = new int[taille][taille];
-        
+
         for (int i=0;i<taille;i++) {
             for(int j=0; j<taille;j++) {
                 plateau[i][j] = 0;
             }
         }
-        
+
     }
-   
-    /** 
+
+    /**
      * Choix de l'orientation du bateau et de son positionement 
      * Vérifie si le bateau peut être placé
      * Si oui, génère le bateau
@@ -78,7 +78,7 @@ public class Plateau {
             }
         }
         System.out.println("ON EST LA");
-        
+
         if(allOk){
             genererBateaux(plateau,coord_x,coord_y,taille, horizontal);
             return true;
@@ -86,48 +86,48 @@ public class Plateau {
             return false;
         }
     }
-    
+
     /**
      *Placement du bateau sur le plateau
      */
     private void genererBateaux(int[][] plateau, int coord_y, int coord_x, int taille, boolean horizontal){
-         
+
         if (horizontal){
             for (int j=coord_y; j<coord_y+taille; j++)
-            plateau[coord_x][j]=1;
+                plateau[coord_x][j]=1;
         }else{
             for(int i=coord_x; i<taille+coord_x; i++)
-            plateau[i][coord_y]=1;
+                plateau[i][coord_y]=1;
         }
     }
-        
-    public static void afficherPlateau (int[][] plateau) {
-    int i,j;
+
+    public void afficherPlateau (int[][] plateau) {
+        int i,j;
         System.out.print("+|"); //AFFICHE L'EN TETE
         for(j=0; j<plateau[0].length;j++){
             System.out.print(j);
         }
         System.out.println("+");
         //FIN EN TETE
-        
-        System.out.print(" |"); //SEPARATION    
+
+        System.out.print(" |"); //SEPARATION
         for(j=0; j<plateau[0].length;j++){
             System.out.print("-");
         }
         System.out.println("|");
-        // FIN SEPARATION    
-            
+        // FIN SEPARATION
+
         for(i=0; i<plateau.length; i++) {
             System.out.print(i+"|");
-            
+
             for(j=0; j<plateau[0].length;j++){
                 if(plateau[i][j]==0){
                     System.out.print("O");
-                }else if(plateau[i][j]==1){ 
+                }else if(plateau[i][j]==1){
                     System.out.print("•");
-                }else if(plateau[i][j]==2){ 
+                }else if(plateau[i][j]==2){
                     System.out.print("§");
-                }else if(plateau[i][j]==3){ 
+                }else if(plateau[i][j]==3){
                     System.out.print("X");
                 }else {
                     System.out.print("!");
@@ -136,11 +136,35 @@ public class Plateau {
             System.out.println("|");
         }
 
-    System.out.print(" +");
+        System.out.print(" +");
         for(j=0; j<plateau[0].length;j++)
             System.out.print("-");
         System.out.println("+");
-    }    
-    
-    
+    }
+
+    public int recuTir (int[][] plateau, int coord_x, int coord_y){
+        int state = plateau[coord_x][coord_y];
+        switch (state){
+            case 0:
+                state = 2;
+                break;
+            case 1:
+                state = 3;
+                break;
+            case 2:
+                state=2;
+                break;
+            case 3:
+                state = 3;
+                break;
+            case 4:
+                state = 4;
+                break;
+
+        }
+        plateau[coord_x][coord_y]=state;
+        return state;
+    }
+
+
 }
