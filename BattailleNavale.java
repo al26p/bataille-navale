@@ -94,34 +94,70 @@ public class BattailleNavale {
             int pos_x;
             int pos_y;
             int case_state;
-
             boolean partie = true;
+            boolean tour = false;
+            boolean gotX = false;
+            boolean gotY = false;
+
             while(partie) {
+                try{dIn.read();} //wait for input
+                catch(Exception e){}
+
+
                 byte typeTransmission = dIn.readByte();
                 switch (typeTransmission) {
                     case 1:
                         String lanName = dIn.readUTF();
                         System.out.println("Vous jouez contre " + lanName);
                         Joueur J1 = new Joueur(lanName);
-                        //placer les bateaux
+                        //Place les bateaux
                         generationInitiale(J2);
-                        //afficher les tableaux au fur et à mesure
-                        System.out.println(lanName +" Commence");
+                        System.out.println(lanName+"commence");
+                        tour = true;
+
                         break;
                     case 2:
                         pos_x = dIn.readInt();
+                        gotX=true;
                         break;
                     case 3:
                         pos_y = dIn.readInt();
+                        gotY=true;
                         break;
                     case 4:
                         case_state = dIn.readInt();
+                        //changer l'état de la case demandée
+                        case_state = dIn.readInt();
+                        J1.monPlateau.plateau[pos_x][pos_y]=case_state;
+                        tour = false;
                         break;
-
-                    default:
-                        partie = false;
-
                 }
+                if(gotX&&gotY){
+                    int to_send=J2.monPlateau.recuTir(J2.monPlateau.plateau, pos_x, pos_y);
+                    dOut.writeByte(4);
+                    dOut.writeInt(to_send);
+                    dOut.flush();
+                    tour=true;
+                }
+                if(tour) {
+                    System.out.println("Entrez la coordonnée x que vous souhaitez attaquer");
+                    pos_x = sb.nextInt();
+                    System.out.println("Entrez la coordonnée y que vous souhaitez attaquer");
+                    pos_y = sb.nextInt();
+
+
+                    dOut.writeByte(2);
+                    dOut.writeInt(pos_x);
+                    dOut.flush();
+
+                    dOut.writeByte(3);
+                    dOut.writeInt(pos_y);
+                    dOut.flush();
+                }
+
+
+
+
             }
 
                 /*
@@ -273,7 +309,7 @@ public class BattailleNavale {
                     System.out.println("Vous placer un sous-marin (3 cases long)");
                     break;
                 case 5:
-                    System.out.println("Vous placer un torpileur (2 cases long)");
+                    System.out.println("Vous placer untorpileur (2 cases long)");
                     break;
             }
 
@@ -290,29 +326,29 @@ public class BattailleNavale {
         }
 
     }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    
-     /* 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     /*
         //Demander le nom des joueurs
         String input;
         menu();
-        
+
         System.out.println("Veuillez saisir le nom du J1 :");
         input = sc.nextLine();
         Joueur j1 = new Joueur(input);
@@ -320,10 +356,10 @@ public class BattailleNavale {
         System.out.println("Veuillez saisir le nom du J2 :");
         input = sc.nextLine();
         Joueur j2 = new Joueur(input);
-       
+
         System.out.println("Tableau "+j1.getName()+" : ");
         System.out.println("Score initial : "+ j1.getScore());
-        
+
         j1.monPlateau.afficherPlateau(j1.monPlateau.plateau);
         j1.win();
         System.out.println("Score nouveau : "+ j1.getScore());
@@ -331,9 +367,9 @@ public class BattailleNavale {
         System.out.println("Score initial : "+ j2.getScore());
         j2.monPlateau.afficherPlateau(j2.monPlateau.plateau);
         System.out.println("Score nouveau : "+ j2.getScore());
-        
+
     }
-    
+
     */
 
 
