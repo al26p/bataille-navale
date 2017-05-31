@@ -26,14 +26,14 @@ public class Plateau {
     }
 
     /**
-     * Choix de l'orientation du bateau et de son positionement 
+     * Choix de l'orientation du bateau et de son positionement
      * Vérifie si le bateau peut être placé
      * Si oui, génère le bateau
      * @param plateau plateau sur lequel générer les navires
      * @param type Type de bateau à créer
      * @param horizontal si l'orientation du bateau est horizontale
-     * @param coord_x position x du début du bateau 
-     * @param coord_y position y du début du bateau 
+     * @param coord_x position x du début du bateau
+     * @param coord_y position y du début du bateau
      */
     public boolean posBateau(int[][] plateau, int type, boolean horizontal, int coord_x, int coord_y){
         boolean allOk=true;

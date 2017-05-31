@@ -91,13 +91,15 @@ public class BattailleNavale {
             dOut.writeUTF(J2.getName());
             dOut.flush();
 
-            int pos_x;
-            int pos_y;
+            int pos_x = -1;
+            int pos_y = -1;
             int case_state;
             boolean partie = true;
             boolean tour = false;
             boolean gotX = false;
             boolean gotY = false;
+            Joueur J1 = new Joueur("J1");
+
 
             while(partie) {
                 try{dIn.read();} //wait for input
@@ -109,7 +111,7 @@ public class BattailleNavale {
                     case 1:
                         String lanName = dIn.readUTF();
                         System.out.println("Vous jouez contre " + lanName);
-                        Joueur J1 = new Joueur(lanName);
+                        J1.setName(lanName);
                         //Place les bateaux
                         generationInitiale(J2);
                         System.out.println(lanName+"commence");
@@ -189,6 +191,7 @@ public class BattailleNavale {
         System.out.println("Entrez votre nom");
         String name = sb.nextLine();
         Joueur J1 = new Joueur(name);
+        Joueur J2 = new Joueur("J2");
 
         try {
             socketserver = new ServerSocket(2009);
@@ -205,13 +208,14 @@ public class BattailleNavale {
             dOut.writeUTF(J1.getName());
             dOut.flush();
 
-            int pos_x;
-            int pos_y;
-            int case_state;
+            int pos_x = -1;
+            int pos_y = -1;
+            int case_state = -1;
             boolean partie = true;
             boolean tour = true;
             boolean gotX = false;
             boolean gotY = false;
+
 
             while(partie) {
                 try{dIn.read();} //wait for input
@@ -223,7 +227,7 @@ public class BattailleNavale {
                     case 1:
                         String lanName = dIn.readUTF();
                         System.out.println("Vous jouez contre " + lanName);
-                        Joueur J2 = new Joueur(lanName);
+                        J2.setName(lanName);
                         //Place les bateaux
                         generationInitiale(J1);
                         System.out.println("Vous commencez");

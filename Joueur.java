@@ -1,6 +1,6 @@
 public class Joueur {
     private String pseudo;
-    Plateau monPlateau;
+    public Plateau monPlateau;
     private int score;
 
     public Joueur(String name){
@@ -12,5 +12,5 @@ public class Joueur {
     public int getScore(){return score;}
     public void win(){score ++;}
     public String getName(){return pseudo;}
-
+    public void setName(String name){pseudo=name;}
 }
