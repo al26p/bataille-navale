@@ -31,7 +31,7 @@ public class Affichage1 extends JFrame{
 
     /**
      * Affiche un plateau.
-     * @param plateau le plateau à afficher
+     * @param p le plateau à afficher
      */
     public static void afficherplateau(Plateau p) {
         world.pg.p = p;

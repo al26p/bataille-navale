@@ -10,7 +10,7 @@ public class BattailleNavale {
 
     /**La méthode principale
      *
-     * @param args
+     * @param args argument non utilisé
      */
     public static void main (String [] args){
         System.out.println("Hello");

@@ -34,6 +34,7 @@ public class Plateau {
      * @param horizontal si l'orientation du bateau est horizontale
      * @param coord_x position x du début du bateau
      * @param coord_y position y du début du bateau
+     * @return si le bateau a bien ete place
      */
     public boolean posBateau(int[][] plateau, int type, boolean horizontal, int coord_x, int coord_y){
         boolean allOk=true;
