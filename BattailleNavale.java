@@ -8,6 +8,10 @@ public class BattailleNavale {
     static Scanner sc = new Scanner(System.in);
     static int gamemode;
 
+    /**La méthode principale
+     *
+     * @param args
+     */
     public static void main (String [] args){
         System.out.println("Hello");
         int waitForEnter=0;
@@ -29,7 +33,7 @@ public class BattailleNavale {
             switch(gamemode){
                 case 1 :
                     System.out.println("Vous jouez contre l'ordinateur");
-                    System.out.println("Coming soon");
+                    System.out.println("Coming soon");  //LOL
                     break;
                 case 2 :
                     System.out.println("LAN : Selectionnez votre rôle");
@@ -50,7 +54,9 @@ public class BattailleNavale {
         }
     }
 
-
+    /**
+     * Affiche les règles du jeu
+     */
     private static void howTo(){
         System.out.println("Vous disposez de 5 bateaux de longueurs différentes à positionner sur un plateau de 10 sur 10.");
         System.out.println("Tour à tour positionnez les bateaux qui vous sont proposés de la manière suivante:");
@@ -63,14 +69,18 @@ public class BattailleNavale {
 
     }
 
+    /**
+     * Affiche des informations sur le jeu
+     */
     private static void About(){
         System.out.println("Jeu de bataille navale créé par Alban PRATS et Juliette ROYERE, élèves à l'INSA LYON  (PCC1A Groupe 12) dans le cadre d'un projet d'informatique.");
     }
 
 
-
-
-
+    /**
+     * Partie client du jeu
+     *
+     */
     private static void Client(){
         Scanner sb = new Scanner(System.in);
         Socket socket;
@@ -98,13 +108,14 @@ public class BattailleNavale {
             boolean tour = false;
             boolean gotX = false;
             boolean gotY = false;
-            Joueur J1 = new Joueur("J1");
+            Joueur J1 = new Joueur("Adversaire");
+            Affichage.world=new Affichage(J2.monPlateau,name);
+            Affichage1.world=new Affichage1(J1.monPlateau,J1.getName());
 
 
             while(partie) {
-                try{dIn.read();} //wait for input
-                catch(Exception e){}
-
+                Affichage.afficherplateau(J2.monPlateau);
+                Affichage1.afficherplateau(J1.monPlateau);
 
                 byte typeTransmission = dIn.readByte();
                 switch (typeTransmission) {
@@ -115,23 +126,33 @@ public class BattailleNavale {
                         //Place les bateaux
                         generationInitiale(J2);
                         System.out.println(lanName+"commence");
-                        tour = true;
-
+                        tour = false;
+                        typeTransmission=0;
                         break;
                     case 2:
                         pos_x = dIn.readInt();
                         gotX=true;
+                        typeTransmission=0;
                         break;
                     case 3:
                         pos_y = dIn.readInt();
                         gotY=true;
+                        typeTransmission=0;
                         break;
                     case 4:
-                        case_state = dIn.readInt();
                         //changer l'état de la case demandée
                         case_state = dIn.readInt();
                         J1.monPlateau.plateau[pos_x][pos_y]=case_state;
                         tour = false;
+                        typeTransmission=0;
+                        break;
+                    case 10:
+                        partie=false;
+                        System.out.println(dIn.readUTF());
+                        typeTransmission=0;
+                        break;
+                    default:
+                        tour=false;
                         break;
                 }
                 if(gotX&&gotY){
@@ -139,22 +160,42 @@ public class BattailleNavale {
                     dOut.writeByte(4);
                     dOut.writeInt(to_send);
                     dOut.flush();
+                    gotX=false;
+                    gotY=false;
                     tour=true;
                 }
                 if(tour) {
-                    System.out.println("Entrez la coordonnée x que vous souhaitez attaquer");
-                    pos_x = sb.nextInt();
-                    System.out.println("Entrez la coordonnée y que vous souhaitez attaquer");
-                    pos_y = sb.nextInt();
+                    boolean ok=false;
+                    if(!checkVictory(J2)) {
+                        while (!ok) {
+                            System.out.println("Entrez la coordonnée x que vous souhaitez attaquer");
+                            pos_y = sb.nextInt(); //inverse x, y
+                            System.out.println("Entrez la coordonnée y que vous souhaitez attaquer");
+                            pos_x = sb.nextInt();
+                            if (pos_x < J2.monPlateau.plateau.length && pos_y < J2.monPlateau.plateau[0].length && pos_x>=0 && pos_y >= 0) {
+                                dOut.writeByte(2);
+                                dOut.writeInt(pos_x);
+                                dOut.flush();
 
+                                dOut.writeByte(3);
+                                dOut.writeInt(pos_y);
+                                dOut.flush();
 
-                    dOut.writeByte(2);
-                    dOut.writeInt(pos_x);
-                    dOut.flush();
+                                System.out.println("Au tour de "+J1.getName());
+                                tour = false;
+                                ok = true;
+                            } else {
+                                System.out.println("Erreur dans votre saisie, veuillez recommencer");
+                            }
+                        }
+                    }else {
+                        System.out.println("Vous avez perdu");
+                        dOut.writeByte(10);
+                        dOut.writeUTF("Vous avez gagne");
+                        dOut.flush();
+                        partie=false;
+                    }
 
-                    dOut.writeByte(3);
-                    dOut.writeInt(pos_y);
-                    dOut.flush();
                 }
 
 
@@ -181,7 +222,9 @@ public class BattailleNavale {
 
     }
 
-
+    /**
+     * Partie serveur du jeu
+     */
     private static void Server(){
 
         ServerSocket socketserver;
@@ -191,86 +234,127 @@ public class BattailleNavale {
         System.out.println("Entrez votre nom");
         String name = sb.nextLine();
         Joueur J1 = new Joueur(name);
-        Joueur J2 = new Joueur("J2");
+        Joueur J2 = new Joueur("Adversaire");
+
+
 
         try {
             socketserver = new ServerSocket(2009);
-            System.out.println("Le server est à l'adresse " + InetAddress.getLocalHost().getHostAddress());
-            System.out.println("Le serveur est à l'écoute du port " + socketserver.getLocalPort());
+            System.out.println("Le server est a l'adresse " + InetAddress.getLocalHost().getHostAddress());
+            System.out.println("Le serveur est a l'écoute du port " + socketserver.getLocalPort());
             socketduserveur = socketserver.accept();
-            System.out.println("Un joueur s'est connecté");
+            System.out.println("Un joueur s'est connecte");
 
             DataInputStream dIn = new DataInputStream(socketduserveur.getInputStream());
             DataOutputStream dOut = new DataOutputStream(socketduserveur.getOutputStream());
 
-            //envoi du pseudo
-            dOut.writeByte(1);
-            dOut.writeUTF(J1.getName());
-            dOut.flush();
+
 
             int pos_x = -1;
             int pos_y = -1;
             int case_state = -1;
             boolean partie = true;
-            boolean tour = true;
+            boolean tour = false;
             boolean gotX = false;
             boolean gotY = false;
-
+            Affichage.world=new Affichage(J1.monPlateau,name);
+            Affichage1.world=new Affichage1(J2.monPlateau,J2.getName());
 
             while(partie) {
-                try{dIn.read();} //wait for input
-                catch(Exception e){}
+
+                // debug keypoint System.out.println("AH");
 
 
                 byte typeTransmission = dIn.readByte();
+                Affichage.afficherplateau(J1.monPlateau);
+                Affichage1.afficherplateau(J2.monPlateau);
                 switch (typeTransmission) {
+
                     case 1:
                         String lanName = dIn.readUTF();
                         System.out.println("Vous jouez contre " + lanName);
                         J2.setName(lanName);
+                        //envoi du pseudo
+                        dOut.writeByte(1);
+                        dOut.writeUTF(J1.getName());
+                        dOut.flush();
+
                         //Place les bateaux
                         generationInitiale(J1);
                         System.out.println("Vous commencez");
+
+                        J1.monPlateau.afficherPlateau(J1.monPlateau.plateau);
                         tour = true;
+
+                        typeTransmission=0;
 
                         break;
                     case 2:
                         pos_x = dIn.readInt();
                         gotX=true;
+                        typeTransmission=0;
                         break;
                     case 3:
                         pos_y = dIn.readInt();
                         gotY=true;
+                        typeTransmission=0;
                         break;
                     case 4:
-                        case_state = dIn.readInt();
                         //changer l'état de la case demandée
                         case_state = dIn.readInt();
                         J2.monPlateau.plateau[pos_x][pos_y]=case_state;
-                        tour = false;
+                        typeTransmission=0;
+                        break;
+                    case 10:
+                        partie=false;
+                        System.out.println(dIn.readUTF());
+                        typeTransmission=0;
+                        break;
+                    default:
+                        tour=false;
                         break;
                 }
                 if(gotX&&gotY){
-                    int to_send=J1.monPlateau.recuTir(J1.monPlateau.plateau, pos_x, pos_y);
+
+                    int to_send = J1.monPlateau.recuTir(J1.monPlateau.plateau, pos_x, pos_y);
                     dOut.writeByte(4);
                     dOut.writeInt(to_send);
                     dOut.flush();
+                    gotX=false;
+                    gotY=false;
                     tour=true;
                 }
                 if(tour) {
-                    System.out.println("Entrez la coordonnée x que vous souhaitez attaquer");
-                    pos_x = sb.nextInt();
-                    System.out.println("Entrez la coordonnée y que vous souhaitez attaquer");
-                    pos_y = sb.nextInt();
+                    boolean ok=false;
+                    if(!checkVictory(J1)) {
+                        while (!ok) {
+                            System.out.println("Entrez la coordonnée x que vous souhaitez attaquer");
+                            pos_y = sb.nextInt();
+                            System.out.println("Entrez la coordonnée y que vous souhaitez attaquer");
+                            pos_x = sb.nextInt();
+                            if (pos_x < J1.monPlateau.plateau.length && pos_y < J1.monPlateau.plateau[0].length&&pos_x>=0 && pos_y >= 0) {
+                                dOut.writeByte(2);
+                                dOut.writeInt(pos_x);
+                                dOut.flush();
 
+                                dOut.writeByte(3);
+                                dOut.writeInt(pos_y);
+                                dOut.flush();
+                                System.out.println("Au tour de "+J2.getName());
+                                tour = false;
+                                ok = true;
+                            } else {
+                                System.out.println("Erreur dans votre saisie, veuillez recommencer");
+                            }
+                        }
+                    }else {
+                        System.out.println("Vous avez perdu");
+                        dOut.writeByte(10);
+                        dOut.writeUTF("Vous avez gagne");
+                        dOut.flush();
+                        partie=false;
+                    }
 
-                    dOut.writeByte(2);
-                    dOut.writeInt(pos_x);
-                    dOut.flush();
-
-                    dOut.writeByte(3);
-                    dOut.writeInt(pos_y);
-                    dOut.flush();
                 }
 
 
@@ -290,6 +374,25 @@ public class BattailleNavale {
         }
     }
 
+
+    /**Regarde si un joueur a gagné
+     *
+     * @param player le joueure à tester
+     * @return true si le joueur a gagné
+     */
+    public static boolean checkVictory(Joueur player){
+        int[][] t = player.monPlateau.plateau;
+        for(int i=0;i<t.length;i++)
+        {
+            for(int j=0;j<t[0].length;j++) {
+                if(t[i][j]==1){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public static void generationInitiale (Joueur Player){
         boolean horizontal;
         int pos_x;
@@ -299,6 +402,7 @@ public class BattailleNavale {
 
 
         for(int boat = 1; boat < 6; boat++){
+
             switch (boat){
                 case 1:
                     System.out.println("Vous placer un porte-avions (5 cases long)");
@@ -327,6 +431,8 @@ public class BattailleNavale {
                 boat --;
                 System.out.println("Erreur lors de la créationde votre bateau, veuillez recommencer");
             }; //return true/false
+
+            Affichage.afficherplateau(Player.monPlateau);
         }
 
     }

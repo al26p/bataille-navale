@@ -55,7 +55,7 @@ public class Plateau {
         }else{
             return false;
         }
-        System.out.println("ON EST LA");
+        //System.out.println("ON EST LA");
         if (!horizontal){
             if(coord_y+taille>ymax){
                 return false;
@@ -66,7 +66,7 @@ public class Plateau {
                 }
             }
         }
-        System.out.println("ON EST LA");
+        //System.out.println("ON EST LA");
         if(horizontal){
             if(coord_x+taille>xmax){
                 return false;
@@ -77,7 +77,7 @@ public class Plateau {
                 }
             }
         }
-        System.out.println("ON EST LA");
+        // System.out.println("ON EST LA");
 
         if(allOk){
             genererBateaux(plateau,coord_x,coord_y,taille, horizontal);
@@ -101,6 +101,10 @@ public class Plateau {
         }
     }
 
+    /**Affiche le plateau de jeu
+     *
+     * @param plateau Le plateau de jeu
+     */
     public void afficherPlateau (int[][] plateau) {
         int i,j;
         System.out.print("+|"); //AFFICHE L'EN TETE
@@ -124,11 +128,11 @@ public class Plateau {
                 if(plateau[i][j]==0){
                     System.out.print("O");
                 }else if(plateau[i][j]==1){
-                    System.out.print("•");
+                    System.out.print("1");
                 }else if(plateau[i][j]==2){
-                    System.out.print("§");
+                    System.out.print("2");
                 }else if(plateau[i][j]==3){
-                    System.out.print("X");
+                    System.out.print("3");
                 }else {
                     System.out.print("!");
                 }
@@ -142,6 +146,13 @@ public class Plateau {
         System.out.println("+");
     }
 
+    /**Fonction appelée lors de la reception d'un tir, permet d'actualiser la case touchée
+     *
+     * @param plateau Le plateau de jeu
+     * @param coord_x La coordonée X du tir
+     * @param coord_y La coordonnée Y du tir
+     * @return L'état de la case
+     */
     public int recuTir (int[][] plateau, int coord_x, int coord_y){
         int state = plateau[coord_x][coord_y];
         switch (state){
